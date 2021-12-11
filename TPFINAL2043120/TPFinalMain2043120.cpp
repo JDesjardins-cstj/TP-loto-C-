@@ -27,20 +27,14 @@ int main()
          int choixSousMenu;
          string nom = DemanderNom();
          ofstream canalSortie = sortieCanalFichier(nom);
-         ecrireEnTeteBillet(canalSortie);
-        
         
            afficherChoixUn(); 
-
-           afficherSousmenu();
-           choixSousMenu = demanderChoixSousMenu();
            canalSortie.close();
-         break;
+         ecrireEnTeteBillet(canalSortie);
       }
       case 2:
       {
          cout << "Afficher un billet" << endl;
-         system("pause");
          break;
       }
       case 3:

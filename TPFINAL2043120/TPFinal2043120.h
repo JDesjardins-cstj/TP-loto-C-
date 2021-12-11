@@ -20,8 +20,8 @@ const string NOM_FICHIER = "Billets de loto";
 const int LONGEUR_NOM = 25;
 const int LONGEUR_TICKET = 30;
 const int TOTAL_ENTETE = LONGEUR_NOM + LONGEUR_TICKET;
-const int MAX_MENU = 3;
-const int MIN_MENU = 0;
+const char MAX_MENU = '3';
+const char MIN_MENU = '0';
 const int MIN_SOUS_MENU = 0;
 const int MAX_SOUS_MENU = 2;
 const int NOMBRE_MIN = 1;
@@ -57,12 +57,15 @@ void ecrireEnTeteBillet(ofstream& canal);
 
 void afficherChoixUn();
 
-void saisirCombinaison(vector<int> vec);
+vector<int> saisirCombinaison(vector<int> vec);
 
 bool validerChoixCombinaison(string clavier);
 
 bool existe(int nbr, vector<int> vec, int position);
 
-void choisirCombinaisonAuHasard(vector<int> vec);
+void choisirCombinaisonAuHasard(vector<int>& vec);
 
 int genererAleatoire(int min, int max);
+
+void afficherCombinaison(vector<int> vec);
+

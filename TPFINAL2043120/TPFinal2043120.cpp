@@ -28,6 +28,7 @@ int demanderChoixMenu()
    while (validerChoixMenu(nombre))
    {
       cout << "le nombre doit etre entre " << MIN_MENU << " et " << MAX_MENU << endl;
+      system("pause");
       getline(cin, nombre, '\n');
    }
    //convertion du nombre qui est en string pour le mettre en int 
@@ -40,7 +41,7 @@ int demanderChoixMenu()
 bool validerChoixMenu(string clavier)
 {
    // Est-ce que clavier commence par un chiffre
-   if (!clavier.empty() && clavier.at(0) > MIN_MENU && clavier[0] < MAX_MENU)
+   if (clavier.empty() || (clavier.at(0) < MIN_MENU || clavier[0] > MAX_MENU))
    {
       return true;
    }
@@ -70,7 +71,7 @@ void afficherSousmenu()
 bool validerChoixSousMenu(string clavier)
 {
    // Est-ce que clavier commence par un chiffre
-   if (!clavier.empty() && clavier.at(0) >= '0' && clavier[0] <= '2')
+   if (clavier.empty() || (clavier.at(0) < '0' || clavier[0] > '2'))
    {
       return true;
    }
@@ -162,6 +163,7 @@ void afficherChoixUn()
 {
    vector<int> vecNombre(NB_NOMBRE);
    int choixSousMenu;
+   
 
 
    afficherSousmenu();
@@ -170,28 +172,31 @@ void afficherChoixUn()
    {
       switch (choixSousMenu)
       {
-      case 1:
-      {
-         saisirCombinaison(vecNombre);
-         break;
+         case 1:
+         {
+            vecNombre = saisirCombinaison(vecNombre);
+            afficherCombinaison(vecNombre);
+            break;
+         }
+         case 2:
+         {
+            choisirCombinaisonAuHasard(vecNombre);
+            afficherCombinaison(vecNombre);
+            break;
+         }
       }
-      case 2:
-      {
-         choisirCombinaisonAuHasard(vecNombre);
-         break;
-      }
-      }
-      break;
     
+      afficherSousmenu();
+      choixSousMenu = demanderChoixSousMenu();
    }
 }
 
-void saisirCombinaison(vector<int> vec)
+vector<int> saisirCombinaison(vector<int> vec)
 {
    string nombre;
    for (int  i = 0; i < NB_NOMBRE; i++)
    {
-    cout << "Veuillez entrer le nombre #" << i+1 << " entre " << NOMBRE_MIN <<" et " << NOMBRE_MAX << " seulement";
+    cout << "Veuillez entrer le nombre #" << i+1 << " entre " << NOMBRE_MIN <<" et " << NOMBRE_MAX << " seulement -->";
     getline(cin, nombre, '\n');
 
     while (validerChoixCombinaison(nombre))
@@ -203,7 +208,7 @@ void saisirCombinaison(vector<int> vec)
   
     while (existe(stoi(nombre),vec, i))
     {
-       cout << " ERREUR! le nombre doit etre entre " << NOMBRE_MIN <<  " et " <<NOMBRE_MAX << endl;
+       cout << "Vous avez déjà entré ce nombre" << endl;
        getline(cin, nombre, '\n');
 
        while (validerChoixCombinaison(nombre))
@@ -212,10 +217,10 @@ void saisirCombinaison(vector<int> vec)
           getline(cin, nombre, '\n');
        }
     }
-    vec.at(i) = stoi(nombre);
+    vec.at(i)= stoi(nombre);
+    
    }
- 
-  
+ return vec;
 }
 
 
@@ -232,18 +237,17 @@ bool existe(int nbr, vector<int> vec, int position)
    return false;
 }
 
-void choisirCombinaisonAuHasard(vector<int> vec)
+void choisirCombinaisonAuHasard(vector<int>& vec)
 {
    int alea;
-   
-      alea = genererAleatoire(MIN, MAX);
 
 
       for (int i = 0; i < NB_NOMBRE; i++)
       {
+         alea = genererAleatoire(MIN, MAX);
          while (existe(alea, vec, i))
          {
-            alea;
+            alea = genererAleatoire(MIN, MAX);
          }
          vec.at(i) = alea;
       }
@@ -254,12 +258,12 @@ void choisirCombinaisonAuHasard(vector<int> vec)
 
 bool validerChoixCombinaison(string clavier)
 {
-   if (clavier != "")
+   if (clavier != "" && ( clavier.at(0) >= '1' && clavier.at(0) <= '9'))
    {
       int nombreMax = stoi(clavier);
 
       // Est-ce que clavier commence par un chiffre
-      if ( nombreMax <= NOMBRE_MIN && nombreMax >= NOMBRE_MAX)
+      if ( nombreMax < NOMBRE_MIN || nombreMax > NOMBRE_MAX)
       {
          return true;
       }
@@ -268,9 +272,7 @@ bool validerChoixCombinaison(string clavier)
       {
          return false;
       }
-   }
-
-   return false;
+   } 
 }
 
 
@@ -279,4 +281,18 @@ int genererAleatoire(int min, int max)
    // srand JAMAIS dans une fonction autre que le MAIN
    // srand(time(NULL));
    return rand() % (max - min + 1) + min;
+}
+
+void afficherCombinaison(vector<int> vec)
+{
+   for (int i = 0; i < vec.size(); i++)
+   {
+      cout << vec.at(i);
+      if (i != (vec.size()-1))
+      {
+         cout << "-";
+      }
+   }
+   cout << endl;
+   system("pause");
 }
