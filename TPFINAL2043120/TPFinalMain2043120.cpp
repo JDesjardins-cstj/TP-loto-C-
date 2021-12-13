@@ -24,18 +24,14 @@ int main()
       {
       case 1:
       {
-         int choixSousMenu;
-         string nom = DemanderNom();
-         ofstream canalSortie = sortieCanalFichier(nom);
-        
            afficherChoixUn(); 
-           canalSortie.close();
-         ecrireEnTeteBillet(canalSortie);
+           break;
       }
       case 2:
       {
-         cout << "Afficher un billet" << endl;
-         break;
+         afficherBillet();
+         system("pause");
+         break; 
       }
       case 3:
       {

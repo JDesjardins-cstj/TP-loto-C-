@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iomanip>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -29,6 +30,8 @@ const int NOMBRE_MAX = 49;
 const int NB_NOMBRE = 6;
 const int MAX = 49;
 const int MIN = 1;
+const string TIRAGE = "Tirage a 18h";
+const string TEMPS = "Mercerdi 15 decembre 2021";
 
 
 
@@ -69,3 +72,10 @@ int genererAleatoire(int min, int max);
 
 void afficherCombinaison(vector<int> vec);
 
+void ecrireCombinaisonDansBillet(ofstream& canal,vector<int> vec);
+
+ifstream entreCanalFichier(string Fichier);
+
+void afficherBillet();
+
+void ecrirePiedBillet(ofstream& canal,string nom);

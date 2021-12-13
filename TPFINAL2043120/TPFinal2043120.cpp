@@ -28,7 +28,6 @@ int demanderChoixMenu()
    while (validerChoixMenu(nombre))
    {
       cout << "le nombre doit etre entre " << MIN_MENU << " et " << MAX_MENU << endl;
-      system("pause");
       getline(cin, nombre, '\n');
    }
    //convertion du nombre qui est en string pour le mettre en int 
@@ -122,9 +121,9 @@ int demanderChoixSousMenu()
    cout << "Veuillez entrer votre choix --> ";
    getline(cin, nombre, '\n');
    // tant que le nombre n'est pas entre MIN_SOUS_MENU et MAX_SOUS_MENU on lui redemande un nombre
-   while (validerChoixMenu(nombre))
+   while (validerChoixSousMenu(nombre))
    {
-      cout << "le nombre doit etre entre 0 et 3" << endl;
+      cout << "le nombre doit etre entre 0 et 2" << endl;
       getline(cin, nombre, '\n');
    }
    //convertion du nombre qui est en string pour le mettre en int 
@@ -155,16 +154,19 @@ void ecrireEnTeteBillet(ofstream& canal)
 {
    // on écrit sur la console le menu principale 
    canal << setw(TOTAL_ENTETE) << setfill(TYPE_REMPLISSAGE_MENU) << "" << endl;
-   canal << left << setw((TOTAL_ENTETE-TITRE_LOTO.length()) /2) << setfill(TYPE_REMPLISSAGE_MENU_TITRE) << TITRE_LOTO << "";
+   canal << setw((TOTAL_ENTETE-TITRE_LOTO.length()) /2) << setfill(TYPE_REMPLISSAGE_MENU_TITRE) << "" << TITRE_LOTO << setw((TOTAL_ENTETE - TITRE_LOTO.length()) / 2) << setfill(TYPE_REMPLISSAGE_MENU_TITRE) << "" <<endl;
    canal << setw(TOTAL_ENTETE) << setfill(TYPE_REMPLISSAGE_MENU) << "" << endl;
 }
 
 void afficherChoixUn()
 {
    vector<int> vecNombre(NB_NOMBRE);
+   vector<int> vecNombreOrdre(NB_NOMBRE);
    int choixSousMenu;
-   
 
+   string nom = DemanderNom();
+   ofstream canalSortie = sortieCanalFichier(nom);
+   ecrireEnTeteBillet(canalSortie);
 
    afficherSousmenu();
    choixSousMenu = demanderChoixSousMenu();
@@ -176,12 +178,14 @@ void afficherChoixUn()
          {
             vecNombre = saisirCombinaison(vecNombre);
             afficherCombinaison(vecNombre);
+            ecrireCombinaisonDansBillet(canalSortie, vecNombre);
             break;
          }
          case 2:
          {
             choisirCombinaisonAuHasard(vecNombre);
             afficherCombinaison(vecNombre);
+            ecrireCombinaisonDansBillet(canalSortie, vecNombre);
             break;
          }
       }
@@ -189,11 +193,14 @@ void afficherChoixUn()
       afficherSousmenu();
       choixSousMenu = demanderChoixSousMenu();
    }
+   ecrirePiedBillet(canalSortie,nom);
+   canalSortie.close();
 }
 
 vector<int> saisirCombinaison(vector<int> vec)
 {
    string nombre;
+   int max;
    for (int  i = 0; i < NB_NOMBRE; i++)
    {
     cout << "Veuillez entrer le nombre #" << i+1 << " entre " << NOMBRE_MIN <<" et " << NOMBRE_MAX << " seulement -->";
@@ -218,8 +225,8 @@ vector<int> saisirCombinaison(vector<int> vec)
        }
     }
     vec.at(i)= stoi(nombre);
-    
    }
+   sort(vec.begin(), vec.end());
  return vec;
 }
 
@@ -251,6 +258,7 @@ void choisirCombinaisonAuHasard(vector<int>& vec)
          }
          vec.at(i) = alea;
       }
+      sort(vec.begin(), vec.end());
 }
 
 
@@ -290,9 +298,70 @@ void afficherCombinaison(vector<int> vec)
       cout << vec.at(i);
       if (i != (vec.size()-1))
       {
-         cout << "-";
+         cout << " - ";
       }
    }
    cout << endl;
    system("pause");
+}
+
+void ecrireCombinaisonDansBillet(ofstream& canal, vector<int> vec)
+{
+   for (int i = 0; i < vec.size(); i++)
+   {
+      canal << vec.at(i);
+      if (i != (vec.size() - 1))
+      {
+         canal << " - ";
+      }
+   }
+   canal << endl;
+}
+
+ifstream entreCanalFichier(string Fichier)
+{
+   ifstream canal;
+
+   // Initialiser le canal de sortie : le mode out permet de créer le fichier. S'il existe déjà, le fichier sera écrasé
+   canal.open(Fichier, ios::in);           // Pour ne pas écraser un fichier existant et pouvoir lui ajouter des données à la fin, il faut ouvrir dans le mode ios::app (append)      
+   // si le canal n'existe pas on lui fait un message d'erreur sur le canal erreur
+   if (!canal)
+   {
+      cerr << "Erreur : Le fichier " << Fichier << " n'a pas été correctement créé. Vérifiez l'espace disque disponible ou vos droits d'accès." << endl;
+      system("pause");
+      exit(1);
+   }
+
+   return canal;
+}
+
+void afficherBillet()
+{
+   string numero;
+   string nom = DemanderNom();
+   ifstream fichier = entreCanalFichier(nom);
+
+   if (!fichier)
+   {
+      cerr << "Erreur : Le fichier " << nom << " n'a pas été correctement créé. Vérifiez l'espace disque disponible ou vos droits d'accès." << endl;
+      system("pause");
+      exit(1);
+   }
+
+   while (!fichier.eof())
+   {
+      getline(fichier, numero, '\n');
+      cout <<endl<< numero;
+   }
+
+   fichier.close();
+}
+
+void ecrirePiedBillet(ofstream& canal,string nom)
+{
+   // on écrit sur la console le menu principale 
+   canal << setw(TOTAL_ENTETE) << setfill(TYPE_REMPLISSAGE_MENU) << "" << endl;
+   canal << setw((TOTAL_ENTETE - TIRAGE.length()) / 2) << setfill(TYPE_REMPLISSAGE_MENU_TITRE) << "" << TIRAGE << setw((TOTAL_ENTETE - TIRAGE.length()) / 2) << setfill(TYPE_REMPLISSAGE_MENU_TITRE) << "" << endl;
+   canal << setw((TOTAL_ENTETE - TEMPS.length()) / 2) << setfill(TYPE_REMPLISSAGE_MENU_TITRE) << "" << TEMPS << setw((TOTAL_ENTETE - TEMPS.length()) / 2) << setfill(TYPE_REMPLISSAGE_MENU_TITRE) << "" << endl;
+   canal << setw(TOTAL_ENTETE) << setfill(TYPE_REMPLISSAGE_MENU) << "" << endl;
 }
